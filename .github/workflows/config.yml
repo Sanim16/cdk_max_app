@@ -41,11 +41,12 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: my-ecr-repo
           IMAGE_TAG: ${{ github.sha }}
+        # an action can be added here to test the image before building
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-  deploy:
+  infra-test:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -60,9 +61,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - run: npm install -g aws-cdk
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12.7'
@@ -77,8 +76,6 @@ jobs:
           cdk bootstrap
           cdk diff
           cdk synth
-        
-      
       
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
@@ -96,9 +93,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - run: npm install -g aws-cdk
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12.7'
@@ -113,12 +108,3 @@ jobs:
           cdk deploy --require-approval never
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
-
-      
-      
-  
-      
-     
-
-
-        
