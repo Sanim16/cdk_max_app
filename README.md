@@ -33,6 +33,11 @@ $ cdk synth
 ```
 
 You can now begin exploring the source code, contained in the directory.
+There is also a very trivial test included that can be run like this:
+
+```
+$ pytest
+```
 
 
 To add additional dependencies, for example other CDK libraries, just add to
