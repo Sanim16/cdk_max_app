@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   build:
+    # This job should be set to only run if there is a change in the Dockerfile
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
@@ -51,8 +52,8 @@ jobs:
       - build
     if: |
       github.event_name == 'pull_request' &&
-      # always() && 
-      # (needs.build.result == 'skipped' || needs.build.result == 'success') &&
+    # always() && 
+    # (needs.build.result == 'skipped' || needs.build.result == 'success') &&
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
