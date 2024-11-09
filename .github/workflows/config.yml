@@ -45,13 +45,14 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        working-directory: ./maxapp
 
   infra-test:
     needs:
       - build
     if: |
       github.event_name == 'pull_request'
-    # always() && 
+    # && always() && 
     # (needs.build.result == 'skipped' || needs.build.result == 'success') &&
     runs-on: ubuntu-latest
     steps:
