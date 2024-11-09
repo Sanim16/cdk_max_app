@@ -51,7 +51,7 @@ jobs:
     needs:
       - build
     if: |
-      github.event_name == 'pull_request' &&
+      github.event_name == 'pull_request'
     # always() && 
     # (needs.build.result == 'skipped' || needs.build.result == 'success') &&
     runs-on: ubuntu-latest
