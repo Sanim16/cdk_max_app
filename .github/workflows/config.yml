@@ -9,6 +9,7 @@ on:
 env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  REGISTRY_ALIAS: ${{ secrets.REGISTRY_ALIAS }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -44,7 +45,7 @@ jobs:
       - name: Build, tag, and push docker image to Amazon ECR Public
         env:
           REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-          REGISTRY_ALIAS: my-ecr-public-registry-alias
+          REGISTRY_ALIAS: ${{ env.REGISTRY_ALIAS }}
           REPOSITORY: max-ecr-repo
           IMAGE_TAG: ${{ github.sha }}
         run: |
