@@ -31,6 +31,10 @@ class CdkMaxAppStack(Stack):
                                      alb_controller=eks.AlbControllerOptions(version=eks.AlbControllerVersion.V2_8_2),
                                      )
         
+        cluster.add_fargate_profile("maxappprofile",
+                                    selectors=[eks.Selector(namespace="maxapp")]
+                                    )
+        
         access_entry = eks.AccessEntry(self, "MyAccessEntry",
             access_policies=[
                 eks.AccessPolicy.from_access_policy_name("AmazonEKSClusterAdminPolicy",
@@ -51,19 +55,34 @@ class CdkMaxAppStack(Stack):
 
         app_label = {"app": "max-app"}
 
+        namespace = {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "name": "maxapp"
+            }
+        }
+
         deployment = {
             "apiVersion": "apps/v1",
             "kind": "Deployment",
-            "metadata": {"name": "hello-kubernetes"},
+            "metadata": {"name": "hello-kubernetes",
+                         "namespace": "maxapp"},
             "spec": {
                 "replicas": 3,
                 "selector": {"matchLabels": app_label},
                 "template": {
                     "metadata": {"labels": app_label},
                     "spec": {
+                        "tolerations": [{
+                            "key": "eks.amazonaws.com/compute-type",
+                            "operator": "Equal",
+                            "value": "fargate",
+                            "effect": "NoSchedule",
+                        }],
                         "containers": [{
                             "name": "max-app",
-                            "image": "max-app-image", # The image deployed in docker would be here
+                            "image": "public.ecr.aws/j0l0w3g7/my-ecr-public-repo:latest", # The image deployed in docker would be here
                             "ports": [{"containerPort": 80}]
                         }
                         ]
@@ -75,17 +94,34 @@ class CdkMaxAppStack(Stack):
         service = {
             "apiVersion": "v1",
             "kind": "Service",
-            "metadata": {"name": "hello-kubernetes"},
+            "metadata": {"name": "hello-kubernetes",
+                         "namespace": "maxapp"},
             "spec": {
-                "type": "LoadBalancer",
+                "type": "NodePort",
                 "ports": [{"port": 80, "targetPort": 80}],
                 "selector": app_label
             }
         }
 
+        ingress = {
+            "apiVersion": "networking.k8s.io/v1",
+            "kind": "Ingress",
+            "metadata": {"namespace": "maxapp",
+                         "name": "ingress-maxapp",
+                         "annotations": {
+                             "alb.ingress.kubernetes.io/scheme": "internet-facing",
+                             "alb.ingress.kubernetes.io/target-type": "ip",
+                         }
+            },
+            "spec": {
+                "ingressClassName": "alb",
+                "rules": [{"http": {"paths": [{"path": "/", "pathType": "Prefix", "backend": {"service": {"name": "hello-kubernetes", "port": {"number": 80}}}}]}}]
+            }
+        }
+
         eks.KubernetesManifest(self, "hello-kub",
             cluster=cluster,
-            manifest=[deployment, service],
+            manifest=[namespace, deployment, service, ingress],
             ingress_alb=True,
             ingress_alb_scheme=eks.AlbScheme.INTERNET_FACING,
             skip_validation=False,
