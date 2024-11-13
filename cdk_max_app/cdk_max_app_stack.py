@@ -17,7 +17,7 @@ class CdkMaxAppStack(Stack):
         )
 
         mySecurityGroup = ec2.SecurityGroup(self, "SecurityGroup", vpc=vpc,
-                                            description='Allow access to cluster', allow_all_outbound=True)
+                                            description='Allow access to cluster', allow_all_outbound=True, security_group_name="maxappvpcsg")
         
         mySecurityGroup.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(80), 'allow http from the world');
         mySecurityGroup.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(443), 'allow https access from the world');
@@ -69,7 +69,7 @@ class CdkMaxAppStack(Stack):
             "metadata": {"name": "hello-kubernetes",
                          "namespace": "maxapp"},
             "spec": {
-                "replicas": 3,
+                "replicas": 2,
                 "selector": {"matchLabels": app_label},
                 "template": {
                     "metadata": {"labels": app_label},
@@ -82,8 +82,18 @@ class CdkMaxAppStack(Stack):
                         }],
                         "containers": [{
                             "name": "max-app",
-                            "image": "public.ecr.aws/j0l0w3g7/max-ecr-repo:latest", # The image deployed in docker would be here
-                            "ports": [{"containerPort": 80}]
+                            "image": "public.ecr.aws/j0l0w3g7/max-ecr-repo:latest",
+                            "ports": [{"containerPort": 80}],
+                            "resources": {
+                                "requests": {
+                                    "memory": "64Mi",
+                                    "cpu": "250m"
+                                },
+                                "limits": {
+                                    "memory": "128Mi",
+                                    "cpu": "5000m"
+                                }
+                            }
                         }
                         ]
                     }
