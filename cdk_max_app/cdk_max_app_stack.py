@@ -82,7 +82,7 @@ class CdkMaxAppStack(Stack):
                         }],
                         "containers": [{
                             "name": "max-app",
-                            "image": "public.ecr.aws/j0l0w3g7/max-ecr-repo:f64a0ce447a188c15028d4759234fb4798e1ad5a", # The image deployed in docker would be here
+                            "image": "public.ecr.aws/j0l0w3g7/max-ecr-repo:latest", # The image deployed in docker would be here
                             "ports": [{"containerPort": 80}]
                         }
                         ]
