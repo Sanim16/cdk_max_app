@@ -13,7 +13,7 @@ class CdkMaxAppStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         vpc = ec2.Vpc(
-            self, "CdkMaxAppVpc",
+            self, "CdkMaxAppVpc", vpc_name="maxappvpc"
         )
 
         mySecurityGroup = ec2.SecurityGroup(self, "SecurityGroup", vpc=vpc,
@@ -82,7 +82,7 @@ class CdkMaxAppStack(Stack):
                         }],
                         "containers": [{
                             "name": "max-app",
-                            "image": "public.ecr.aws/j0l0w3g7/my-ecr-public-repo:latest", # The image deployed in docker would be here
+                            "image": "public.ecr.aws/j0l0w3g7/max-ecr-repo:f64a0ce447a188c15028d4759234fb4798e1ad5a", # The image deployed in docker would be here
                             "ports": [{"containerPort": 80}]
                         }
                         ]
