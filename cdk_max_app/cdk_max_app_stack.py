@@ -13,22 +13,22 @@ class CdkMaxAppStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         vpc = ec2.Vpc(
-            self, "CdkMaxAppVpc", vpc_name="maxappvpc"
+            self, "CdkMaxAppVpc", vpc_name="maxappvpc",
         )
 
         mySecurityGroup = ec2.SecurityGroup(self, "SecurityGroup", vpc=vpc,
                                             description='Allow access to cluster', allow_all_outbound=True, security_group_name="maxappvpcsg")
         
-        mySecurityGroup.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(80), 'allow http from the world');
+        mySecurityGroup.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(80), 'allow http access from the world');
         mySecurityGroup.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(443), 'allow https access from the world');
         mySecurityGroup.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.icmp_type(-1), 'allow icmp access from the world');
-        
         
         cluster = eks.FargateCluster(self, 'max-eks', version=eks.KubernetesVersion.V1_31,
                                      cluster_name='max-cluster', endpoint_access=eks.EndpointAccess.PUBLIC_AND_PRIVATE,
                                      vpc=vpc, authentication_mode=eks.AuthenticationMode.API_AND_CONFIG_MAP,
                                      kubectl_layer=KubectlV31Layer(self, "kubectl"),
                                      alb_controller=eks.AlbControllerOptions(version=eks.AlbControllerVersion.V2_8_2),
+                                     security_group=mySecurityGroup,
                                      )
         
         cluster.add_fargate_profile("maxappprofile",
@@ -69,7 +69,7 @@ class CdkMaxAppStack(Stack):
             "metadata": {"name": "hello-kubernetes",
                          "namespace": "maxapp"},
             "spec": {
-                "replicas": 2,
+                "replicas": 1,
                 "selector": {"matchLabels": app_label},
                 "template": {
                     "metadata": {"labels": app_label},
