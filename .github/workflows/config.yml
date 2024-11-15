@@ -111,13 +111,13 @@ jobs:
         with:
           python-version: '3.12.7'
 
-      - name: venv
-        id: venv
-        run: |-
-          python3 -m venv .venv
-          source .venv/bin/activate
-          python -m pip install -r requirements.txt
-          cdk deploy --require-approval never
+      # - name: venv
+      #   id: venv
+      #   run: |-
+      #     python3 -m venv .venv
+      #     source .venv/bin/activate
+      #     python -m pip install -r requirements.txt
+      #     cdk deploy --require-approval never
 
       - name: venv-teardown
         id: venv-teardown
