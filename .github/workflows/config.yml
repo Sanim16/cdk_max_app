@@ -120,7 +120,7 @@ jobs:
           cdk deploy --require-approval never
 
       - name: venv-teardown
-        id: venv
+        id: venv-teardown
         run: |-
           python3 -m venv .venv
           source .venv/bin/activate
