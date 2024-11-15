@@ -8,7 +8,7 @@ This project demonstrates the use of AWS CDK to deploy an app to an EKS fargate 
 
 The project defines an Amazon EKS cluster with the following configuration:
 
-* Dedicated VPC called `CdkNewAppVpc` configured with security groups
+* Dedicated VPC called `maxappvpc` configured with security groups
 * EKS Cluster - The cluster endpoint created by EKS.
 * Fargate Profile - Fargate worker nodes managed by EKS.
 * KubectlHandler - Lambda function for invoking kubectl commands on the cluster - created by CDK.
@@ -24,7 +24,11 @@ a virtualenv within the project, stored under the .venv directory.  To create th
 it assumes that there is a `python3` executable in your path with access to the `venv` package.
 
 
-After the init process completes and the virtualenv is created, you can use the following
+```
+$ python3 -m venv .venv
+```
+
+After the virtualenv is created, you can use the following
 step to activate your virtualenv.
 
 ```
@@ -64,3 +68,13 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+p.s: To deploy the infrastructure and the app:
+* uncomment the `venv` step in the `deploy` job in `./.github/workflows/config.yml`
+* comment out the `venv-teardown` step also.
+
+## Cleanup
+Remember to delete all AWS components afterwards to avoid unforseen bills.
+To tear down the infrastructure and the app:
+* comment out the `venv` step in the `deploy` job in `./.github/workflows/config.yml`
+* uncomment the `venv-teardown` step in the `deploy` job in `./.github/workflows/config.yml`

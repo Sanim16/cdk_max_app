@@ -69,7 +69,7 @@ class CdkMaxAppStack(Stack):
             "metadata": {"name": "hello-kubernetes",
                          "namespace": "maxapp"},
             "spec": {
-                "replicas": 1,
+                "replicas": 3,
                 "selector": {"matchLabels": app_label},
                 "template": {
                     "metadata": {"labels": app_label},
