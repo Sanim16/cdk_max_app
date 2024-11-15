@@ -68,3 +68,13 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+p.s: To deploy the infrastructure and the app:
+* uncomment the `venv` step in the `deploy` job in `./.github/workflows/config.yml`
+* comment out the `venv-teardown` step also.
+
+## Cleanup
+Remember to delete all AWS components afterwards to avoid unforseen bills.
+To tear down the infrastructure and the app:
+* comment out the `venv` step in the `deploy` job in `./.github/workflows/config.yml`
+* uncomment the `venv-teardown` step in the `deploy` job in `./.github/workflows/config.yml`
